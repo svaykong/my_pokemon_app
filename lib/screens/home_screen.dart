@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../screens/list_bookmark_screen.dart';
+import '../screens/pokemon_detail_screen.dart';
 import '../screens/pokemon_card.dart';
 import '../data/api/api_client.dart';
 import '../data/models/pokemon.dart';
@@ -70,7 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('My Pokemon'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ListBookmarkScreen(),
+              ),
+            ),
             icon: const Icon(FontAwesomeIcons.bookmark),
           ),
         ],
@@ -133,9 +139,14 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // BlocProvider.of<NavCubit>(context).showPokemonDetails(
-              //   pokemons[index].id,
-              // );
+              'pokemon name: ${pokemons[index].name}'.log();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PokemonDetailScreen(
+                    pokemon: pokemons[index],
+                  ),
+                ),
+              );
             },
             child: PokemonCard(
               id: pokemons[index].id,
