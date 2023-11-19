@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../bloc/pokemon_notifier.dart';
 import '../screens/list_bookmark_screen.dart';
 import '../screens/pokemon_detail_screen.dart';
 import '../screens/pokemon_card.dart';
@@ -84,7 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Center(
           child: FutureBuilder(
-            future: _fetchListPokemonFuture,
+            future: _fetchListPokemonFuture.then((value) {
+              Provider.of<PokemonNotifier>(context, listen: false).savePokemons(value);
+              return value;
+            }),
             builder: (BuildContext context, AsyncSnapshot<List<Pokemon>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../bloc/bookmark_pokemon_notifier.dart';
 import '../data/models/pokemon.dart';
-import '../utils/logger.dart';
+import '../utils/common.dart';
 
 class PokemonDetailScreen extends StatelessWidget {
   const PokemonDetailScreen({
@@ -20,6 +20,7 @@ class PokemonDetailScreen extends StatelessWidget {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     var bookmarkNotifier = Provider.of<BookmarkPokemonNotifier>(context, listen: true);
+    var isContain = bookmarkNotifier.bookmarks.contains(pokemon.id);
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -50,25 +51,28 @@ class PokemonDetailScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-              bookmarkNotifier.bookmarks.contains(pokemon.id)
-                  ? const SizedBox.shrink()
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      if (isContain) {
+                        bookmarkNotifier.removeBookmark(pokemon.id);
+                        showSnackBar(context, 'success removed');
+                      } else {
+                        bookmarkNotifier.addedBookmark(pokemon.id);
+                        showSnackBar(context, 'success added');
+                      }
+                    },
+                    child: Row(
                       children: [
-                        const Text('Add to Bookmark'),
-                        IconButton(
-                          onPressed: () {
-                            'bookmark pressed...'.log();
-                            // call BookmarkPokemonNotifier -> bookmark
-                            bookmarkNotifier.addedBookmark(pokemon.id);
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text('Bookmark success'),
-                            ));
-                          },
-                          icon: const Icon(Icons.bookmark),
-                        ),
+                        Text(isContain ? 'Removed from bookmark' : 'Add to Bookmark'),
+                        const Icon(Icons.bookmark),
                       ],
                     ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

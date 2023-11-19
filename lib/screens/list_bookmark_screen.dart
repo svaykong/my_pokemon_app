@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '/bloc/pokemon_notifier.dart';
+import '/utils/logger.dart';
+import '../utils/common.dart';
 import '../bloc/bookmark_pokemon_notifier.dart';
 
 class ListBookmarkScreen extends StatelessWidget {
@@ -16,17 +19,19 @@ class ListBookmarkScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Center(
-          child: Consumer<BookmarkPokemonNotifier>(
-            builder: (_, bookmarkNotifier, __) {
+          child: Consumer2<BookmarkPokemonNotifier, PokemonNotifier>(
+            builder: (_, bookmarkNotifier, pokemonNotifier, __) {
               if (bookmarkNotifier.bookmarks.isEmpty) {
                 return const Text('You don\'t have any bookmarks');
               } else {
                 var bookmarks = bookmarkNotifier.bookmarks;
+                pokemonNotifier.filterPokemons(bookmarks);
+                var pokemons = pokemonNotifier.filterResults;
                 return ListView.builder(
                     padding: const EdgeInsets.all(6.0),
-                    itemCount: bookmarks.length,
+                    itemCount: pokemons.length,
                     itemBuilder: (_, index) {
-                      var pokemonID = bookmarks.elementAt(index);
+                      var pokemonID = pokemons.elementAt(index).id;
                       return Card(
                         child: ListTile(
                           title: Text('Bookmark ID: $pokemonID'),
@@ -34,11 +39,7 @@ class ListBookmarkScreen extends StatelessWidget {
                             icon: const Icon(FontAwesomeIcons.trash),
                             onPressed: () {
                               bookmarkNotifier.removeBookmark(pokemonID);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Bookmark removed success'),
-                                ),
-                              );
+                              showSnackBar(context, 'success removed');
                             },
                           ),
                         ),
