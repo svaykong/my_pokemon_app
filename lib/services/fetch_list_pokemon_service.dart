@@ -1,4 +1,8 @@
-import '../data/models/pokemon.dart';
+import 'package:flutter/material.dart' show BuildContext;
+
+import 'package:provider/provider.dart';
+
+import '../bloc/pokemon_notifier.dart';
 import '../data/repository/fetch_list_pokemon_repository.dart';
 import '../utils/logger.dart';
 
@@ -13,19 +17,22 @@ class FetchListPokemonService {
     _fetchListPokemonRepo ??= repo;
   }
 
-  Future<List<Pokemon>> fetchListPokemon() async {
+  Future<bool> fetchListPokemon(BuildContext context) async {
     "FetchListPokemonService fetchListPokemon start".log();
     try {
       if (_fetchListPokemonRepo == null) {
         throw Exception("FetchListPokemonRepository is null");
       }
 
-      // delayed 300 milliseconds
-      // await Future.delayed(const Duration(milliseconds: 300), () {});
-      return await _fetchListPokemonRepo!.fetchListPokemon();
+      final results = await _fetchListPokemonRepo!.fetchListPokemon();
+      if (!context.mounted) {
+        return false;
+      }
+      context.read<PokemonNotifier>().save(results);
+      return true;
     } on Exception catch (e) {
       "FetchListPokemonService fetchListPokemon Exception: $e".log();
-      return [];
+      return false;
     } finally {
       "FetchListPokemonService fetchListPokemon finally".log();
     }

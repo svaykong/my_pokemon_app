@@ -11,9 +11,11 @@ class PokemonDetailScreen extends StatelessWidget {
   const PokemonDetailScreen({
     super.key,
     required this.pokemon,
+    this.tag = '',
   });
 
   final Pokemon pokemon;
+  final String tag;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +32,13 @@ class PokemonDetailScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox.fromSize(
-                size: Size(width * 0.9, height * 0.4),
+                size: Size(width * 0.9, height * 0.2),
                 child: Card(
                   child: Hero(
-                    tag: pokemon.id,
+                    tag: tag.isEmpty ? pokemon.id : tag,
                     child: CachedNetworkImage(
                       imageUrl: pokemon.imageURL,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitHeight,
                       placeholder: (context, url) => const Center(
                         child: CircularProgressIndicator(),
                       ),

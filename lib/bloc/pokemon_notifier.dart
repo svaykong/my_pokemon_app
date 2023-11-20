@@ -3,15 +3,16 @@ import 'package:flutter/foundation.dart' show ChangeNotifier;
 import '../data/models/pokemon.dart';
 
 class PokemonNotifier with ChangeNotifier {
+  final _name = 'PokemonNotifier';
   final List<Pokemon> _pokemons = [];
 
   List<Pokemon> get pokemons => _pokemons;
 
   final Set<Pokemon> _filterResults = {};
+
   Set<Pokemon> get filterResults => _filterResults;
 
-
-  void savePokemons(List<Pokemon> listPokemons) {
+  void save(List<Pokemon> listPokemons) {
     _pokemons.addAll(listPokemons);
     notifyListeners();
   }
@@ -24,5 +25,15 @@ class PokemonNotifier with ChangeNotifier {
         }
       }
     }
+  }
+
+  void removeFilterPokemons(int pokemonID) {
+    _filterResults.removeWhere((pokemon) => pokemon.id == pokemonID);
+    notifyListeners();
+  }
+
+  void clear() {
+    _pokemons.clear();
+    notifyListeners();
   }
 }

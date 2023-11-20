@@ -8,7 +8,6 @@ import '../screens/list_bookmark_screen.dart';
 import '../screens/pokemon_detail_screen.dart';
 import '../screens/pokemon_card.dart';
 import '../data/api/api_client.dart';
-import '../data/models/pokemon.dart';
 import '../data/repository/fetch_list_pokemon_repository.dart';
 import '../services/fetch_list_pokemon_service.dart';
 import '../utils/logger.dart';
@@ -21,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final Future<List<Pokemon>> _fetchListPokemonFuture;
+  late final Future<bool> _fetchListPokemonFuture;
   final ScrollController _scrollController = ScrollController();
   bool _showBtn = false;
 
@@ -41,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // pokemon service initialize
     fetchListPokemonService.init(fetchListPokemonRepos);
 
-    _fetchListPokemonFuture = fetchListPokemonService.fetchListPokemon();
+    _fetchListPokemonFuture = fetchListPokemonService.fetchListPokemon(context);
 
     _scrollController.addListener(() {
       //scroll listener
@@ -85,12 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: Center(
-          child: FutureBuilder(
-            future: _fetchListPokemonFuture.then((value) {
-              Provider.of<PokemonNotifier>(context, listen: false).savePokemons(value);
-              return value;
-            }),
-            builder: (BuildContext context, AsyncSnapshot<List<Pokemon>> snapshot) {
+          child: FutureBuilder<bool>(
+            future: _fetchListPokemonFuture,
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
@@ -105,7 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (data == null) {
                     return const Text("Sorry, data is null");
                   }
-                  return _buildGridView(context, data);
+                  if (!data) {
+                    return const Text("Unknown error.");
+                  }
+                  return _buildGridView(context);
               }
             },
           ),
@@ -133,7 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGridView(BuildContext context, List<Pokemon> pokemons) {
+  Widget _buildGridView(BuildContext context) {
+    var pokemons = context.read<PokemonNotifier>().pokemons;
     return GridView.builder(
         controller: _scrollController,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
