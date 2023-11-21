@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pokemon_app/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../bloc/pokemon_notifier.dart';
@@ -14,6 +15,8 @@ import '../utils/logger.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  static const String id = 'home_screen';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -73,11 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('My Pokemon'),
         actions: [
           IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ListBookmarkScreen(),
-              ),
-            ),
+            onPressed: () => Navigator.of(context).pushNamed(ListBookmarkScreen.id),
             icon: const Icon(FontAwesomeIcons.bookmark),
           ),
         ],
@@ -145,12 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
           return GestureDetector(
             onTap: () {
               'pokemon name: ${pokemons[index].name}'.log();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PokemonDetailScreen(
-                    pokemon: pokemons[index],
-                  ),
-                ),
+              Navigator.of(context).pushNamed(
+                PokemonDetailScreen.id,
+                arguments: PokemonDetailScreenArguments(pokemon: pokemons[index]),
               );
             },
             child: PokemonCard(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pokemon_app/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/pokemon_detail_screen.dart';
@@ -12,9 +13,10 @@ import '../bloc/bookmark_pokemon_notifier.dart';
 class ListBookmarkScreen extends StatelessWidget {
   const ListBookmarkScreen({super.key});
 
+  static const String id = 'list_bookmark_screen';
+
   @override
   Widget build(BuildContext context) {
-    const name = 'ListBookmarkScreen';
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
@@ -39,17 +41,13 @@ class ListBookmarkScreen extends StatelessWidget {
                         margin: const EdgeInsets.all(6.0),
                         child: ListTile(
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => PokemonDetailScreen(
-                                  pokemon: pokemons[index],
-                                  tag: pokemons[index].id.toString() + name,
-                                ),
-                              ),
+                            Navigator.of(context).pushNamed(
+                              PokemonDetailScreen.id,
+                              arguments: PokemonDetailScreenArguments(pokemon: pokemons[index], tag: pokemons[index].id.toString() + id),
                             );
                           },
                           leading: Hero(
-                            tag: pokemons[index].id.toString() + name,
+                            tag: pokemons[index].id.toString() + id,
                             child: CachedNetworkImage(
                               imageUrl: pokemons[index].imageURL,
                               placeholder: (context, url) => const Center(
